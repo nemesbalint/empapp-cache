@@ -4,6 +4,7 @@ import empapp.dto.EmployeeDto;
 import empapp.entity.Employee;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,8 @@ public class EmployeeService {
     }
 
     @Transactional
-    @CacheEvict(value = "employee", key = "#id")
+    //@CacheEvict(value = "employee", key = "#id")
+    @CachePut(value = "employee", key = "#id")
     public EmployeeDto updateEmployee(long id, EmployeeDto command) {
         Employee employeeToModify = employeeRepository
                 .findById(id)
