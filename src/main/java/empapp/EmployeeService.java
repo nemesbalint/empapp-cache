@@ -3,6 +3,8 @@ package empapp;
 import empapp.dto.EmployeeDto;
 import empapp.entity.Employee;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -26,12 +28,14 @@ public class EmployeeService {
         return employeeMapper.toEmployeesDto(employeeRepository.findAllWithAddresses());
     }
 
+    @Cacheable("employee")
     public EmployeeDto findEmployeeById(long id) {
         return employeeMapper.toEmployeeDto(employeeRepository.findByIdWithAddresses(id)
                         .orElseThrow(notFoundException(id)));
     }
 
     @Transactional
+    @CacheEvict(value = "employee", key = "#id")
     public EmployeeDto updateEmployee(long id, EmployeeDto command) {
         Employee employeeToModify = employeeRepository
                 .findById(id)
@@ -40,6 +44,7 @@ public class EmployeeService {
         return employeeMapper.toEmployeeDto(employeeToModify);
     }
 
+    @CacheEvict(value = "employee", key = "#id")
     public void deleteEmployee(long id) {
         Employee employee = employeeRepository.findByIdWithAddresses(id)
                 .orElseThrow(notFoundException(id));
